@@ -1,0 +1,10 @@
+Sample booter for XNU
+=====================
+- Requires 'mkimage' from u-boot to generate uImage.
+- Builds using arm-none-eabi toolchain for ARMv7 architecture.
+- Targeted towards ARM RealView PB-A8 board configuration.
+- Can boot from u-boot if you modify it for your board configuration.
+- Maybe sort of buggy.
+- Mach kernel should be in image3 form as 'mach.img3', type is 'krnl', just have DATA and TYPE
+  in the Image3 file.
+- This bootloader isn't perfect.
