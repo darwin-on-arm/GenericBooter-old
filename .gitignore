@@ -1,0 +1,6 @@
+*.img3
+*.o
+.DS_Store
+*.elf
+*~
+
