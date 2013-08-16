@@ -150,7 +150,8 @@ Node *DT__AddChild(Node * parent, const char *name)
         parent->children = node;
     }
     DTInfo.numNodes++;
-    DT__AddProperty(node, "name", strlen(name) + 1, (void *)name);
+    if(name)
+        DT__AddProperty(node, "name", strlen(name) + 1, (void *)name);
     return node;
 }
 
@@ -200,6 +201,7 @@ void DT__Finalize(void)
     DPRINTF("DT__Finalize\n");
     for (prop = allocedProperties; prop != NULL; prop = prop->next) {
         free(prop->value);
+        free((char*)prop->name);
     }
     allocedProperties = NULL;
     freeProperties = NULL;
