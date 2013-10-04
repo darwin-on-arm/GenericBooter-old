@@ -185,7 +185,7 @@ void DT__Initialize(void)
     DTInfo.numProperties = 0;
     DTInfo.totalPropertySize = 0;
 
-    rootNode = DT__AddChild(NULL, "/");
+    rootNode = DT__AddChild(NULL, "device-tree");
     DPRINTF("DT__Initialize done\n");
 }
 

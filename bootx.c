@@ -302,11 +302,34 @@ int AllocateMemoryRange(Node * memory_map, char *rangeName, long start,
     return true;
 }
 
+
+/**
+ * CreateDeviceTreeNode
+ *
+ * Puts a node into the DeviceTree.
+ */
+int CreateDeviceTreeNode(Node * node, char *rangeName, void* datap, int size)
+{
+    char *nameBuf;
+
+    nameBuf = malloc(strlen(rangeName) + 1);
+    if (nameBuf == 0)
+        return false;
+    strcpy(nameBuf, rangeName);
+
+    DT__AddProperty(node, nameBuf, size, (char *)datap);
+
+    return true;
+}
+
+
 /**
  * CreateMemoryMapNode
  *
  * Create the memory map node used to enter the kernel ranges into.
  */
+Node *gChosen;
+
 Node *CreateMemoryMapNode(void)
 {
     Node *root = DT__RootNode();
@@ -316,6 +339,8 @@ Node *CreateMemoryMapNode(void)
     /* /chosen/memory-map */
     chosen = DT__AddChild(root, "chosen");
     memory_map = DT__AddChild(chosen, "memory-map");
+
+    gChosen = chosen;
 
     return memory_map;
 }
@@ -374,6 +399,20 @@ int prepare_devicetree_stage2(void)
     uint32_t deviceTreeLength;
     Node *memory_map = CreateMemoryMapNode();
     assert(memory_map);
+
+    /* Insert the cool iBoot-like stuff. */
+    uint32_t one = 1;
+    uint64_t ecid = 0xBEEFBEEFBEEFBEEF;
+
+    assert(gChosen);
+    CreateDeviceTreeNode(gChosen, "firmware-version", "iBoot-1234.5.6", sizeof("iBoot-1234.5.6"));
+    CreateDeviceTreeNode(gChosen, "debug-enabled", &one, sizeof(uint32_t));
+    CreateDeviceTreeNode(gChosen, "secure-boot", &one, sizeof(uint32_t));    
+
+    CreateDeviceTreeNode(gChosen, "die-id", &ecid, sizeof(uint64_t));    
+    CreateDeviceTreeNode(gChosen, "unique-chip-id", &ecid, sizeof(uint64_t));    
+
+    CreateDeviceTreeNode(DT__RootNode(), "serial-number", "SOMESRNLNMBR", sizeof("SOMESRNLNMBR"));
 
     /* Verify we have a ramdisk. */
     if (ramdisk_base) {
