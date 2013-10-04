@@ -405,7 +405,7 @@ int prepare_devicetree_stage2(void)
     uint64_t ecid = 0xBEEFBEEFBEEFBEEF;
 
     assert(gChosen);
-    CreateDeviceTreeNode(gChosen, "firmware-version", "iBoot-1234.5.6", sizeof("iBoot-1234.5.6"));
+    CreateDeviceTreeNode(gChosen, "firmware-version", "iBoot-1234.5.6~93", sizeof("iBoot-1234.5.6~93"));
     CreateDeviceTreeNode(gChosen, "debug-enabled", &one, sizeof(uint32_t));
     CreateDeviceTreeNode(gChosen, "secure-boot", &one, sizeof(uint32_t));    
 
