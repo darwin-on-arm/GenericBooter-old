@@ -84,7 +84,6 @@ EnterARM(locore_jump_to)
     bic     r0, r0, #(1 << 2)
     mcr     p15, 0, r0, c1, c0, 0
 
-#if 0
     /* Disable VFP/SIMD */
     mov     r0, #0x00000000
     mcr     p10, #0x7, r0, c8, c0, #0
@@ -93,7 +92,6 @@ EnterARM(locore_jump_to)
     mrc     p15, 0, r0, c1, c0, 2
     bic     r0, r0, #0x00f00000
     mcr     p15, 0, r0, c1, c0, 2
-#endif
 
     /* Clear caches. */
     mov     r0, #0

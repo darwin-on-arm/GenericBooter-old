@@ -108,7 +108,6 @@ corestart_main(uint32_t __unused, uint32_t machine_type, struct atag *atags)
     /* We're in. */
     init_debug();
 
-#if 0
     /*
      * Verify machine type.
      */
@@ -122,14 +121,13 @@ corestart_main(uint32_t __unused, uint32_t machine_type, struct atag *atags)
                MACH_TYPE_REALVIEW_PBA8);
         _locore_halt_system();
     }
-#endif
 
     /*
      * Announce ourselves.
      */
     printf("=======================================\n"
            "::\n"
-           ":: GenericBooter for OMAP3530, Copyright 2013, winocm.\n"
+           ":: GenericBooter for ARM RealView, Copyright 2013, winocm.\n"
            "::\n"
            "::\tBUILD_TAG: %s\n"
            "::\n"

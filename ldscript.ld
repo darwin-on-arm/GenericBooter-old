@@ -5,7 +5,7 @@ ENTRY(_start)
 SECTIONS
 {
   /* Read-only sections, merged into text segment: */
-  . = 0x84000040;
+  . = 0x80000040;
   .text      :
   {
     *(.text)
