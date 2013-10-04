@@ -10,7 +10,7 @@ CPPFLAGS	= -Iinclude -D__LITTLE_ENDIAN__ -DTEXT_BASE=$(TEXT_BASE) -DBUILD_STYLE=
 		  -DBUILD_TAG=\"$(BUILD_TAG)\"
 ASFLAGS		= -mcpu=cortex-a8 -DTEXT_BASE=$(TEXT_BASE) -D__ASSEMBLY__
 LDFLAGS		= -nostdlib -Wl,-Tldscript.ld
-TEXT_BASE	= 0x80000040
+TEXT_BASE	= 0x84000040
 CROSS		= arm-none-eabi-
 CC		= $(CROSS)gcc
 AS		= $(CROSS)gcc
@@ -33,8 +33,8 @@ $(TARGET): $(OBJECTS)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o version.o version.c
 	$(CC) $(LDFLAGS) $(OBJECTS) version.o -o $(TARGET)  -lgcc 
 	$(OBJCOPY) -g -S -O binary $(TARGET) $(TARGET).raw
-	mkimage -A arm -O linux -T kernel -C none -a $(TEXT_BASE) -e 0x80000040 -n "Linux 2.6" -d $(TARGET).raw $(TARGET).uImage
-	rm -f $(TARGET) $(TARGET).raw
+	mkimage -A arm -O linux -T kernel -C none -a $(TEXT_BASE) -e 0x84000040 -n "Linux 2.6" -d $(TARGET).raw $(TARGET).uImage
+#	rm -f $(TARGET) $(TARGET).raw
 
 %.o: %.s
 	$(CC) $(CFLAGS) $(ASFLAGS) -c -o $@ $<

@@ -47,12 +47,39 @@
 
 #define barrier()               __asm__ __volatile__("": : :"memory");
 
+#define HwReg(x) *((volatile unsigned long*)(x))
+
+
 /**
  * uart_putc
  *
  * Put a character to the system console.
  */
-uint32_t uart_base = 0x10009000;
+#define OMAP3_L4_PERIPH_BASE    0x49000000
+#define OMAP3_UART_BASE         (OMAP3_L4_PERIPH_BASE + 0x20000)    // This is uart2
+uint32_t gOmapSerialUartBase = OMAP3_UART_BASE;
+
+#define LSR_DR          0x01                /* Data ready */
+#define LSR_THRE        0x20                /* Xmit holding register empty */
+
+#define THR     RBR
+#define DLL     RBR
+#define DLM     IER
+
+/*
+ * Note, on older OMAP platforms, the size of the NS16550 UARTS
+ * is different, for this one it's 32-bit.
+ */
+
+#define RBR     0x0
+#define IER     0x4
+#define FCR     0x8
+#define LCR     0xC
+#define MCR     0x10
+#define LSR     0x14
+#define MSR     0x18
+#define SCR     0x1C
+
 static int inited_printf = 1;
 void uart_putchar(int c)
 {
@@ -61,13 +88,11 @@ void uart_putchar(int c)
 
     if (c == '\n')
         uart_putchar('\r');
-
-    while (AMBA_UART_FR(uart_base) & UART_FR_TXFF) {
-        /* Transmit FIFO full, wait */
+    
+    while(!(HwReg(gOmapSerialUartBase + LSR) & LSR_THRE))
         barrier();
-    }
-
-    AMBA_UART_DR(uart_base) = c;
+    
+    HwReg(gOmapSerialUartBase + THR) = c;
 }
 
 /**
