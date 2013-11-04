@@ -49,10 +49,13 @@ static void populate_memory_info(struct atag *atags)
 
     is_first_region = 1;
 
+	printf("mem_start = %02lx\n", atags->u.mem.start);
+	printf("mem_size = %02lx\n", atags->u.mem.size);
+
     gBootArgs.physBase = atags->u.mem.start;
     gBootArgs.memSize = atags->u.mem.size;
 
-    malloc_init((char *)atags->u.mem.start + atags->u.mem.size -
+    malloc_init((char *)gBootArgs.physBase + gBootArgs.memSize -
                 MALLOC_SIZE, MALLOC_SIZE);
 
     is_malloc_inited = 1;
@@ -111,6 +114,7 @@ corestart_main(uint32_t __unused, uint32_t machine_type, struct atag *atags)
     /*
      * Verify machine type.
      */
+#if 0
     if (machine_type != MACH_TYPE_REALVIEW_PBA8) {
         printf("********************************\n"
                "*                              *\n"
@@ -121,7 +125,8 @@ corestart_main(uint32_t __unused, uint32_t machine_type, struct atag *atags)
                MACH_TYPE_REALVIEW_PBA8);
         _locore_halt_system();
     }
-
+#endif
+	
     /*
      * Announce ourselves.
      */
