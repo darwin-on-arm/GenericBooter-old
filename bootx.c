@@ -489,28 +489,21 @@ void start_darwin(void)
 
     /* XXX: Zero out beginning of RAM. */
     printf("preparing system...\n");
-
-    printf("\tcleaning first 32megs of RAM\n");
     bzero((void *)gBootArgs.physBase, (32 * 1024 * 1024));
 
     /* Initialize boot-args. */
-    printf("\tInitialize boot-args\n");
     assert(prepare_boot_args());
 
     /* Map kernel. */
-    printf("\tMap the kernel\n");
     assert(prepare_kernel());
 
     /* Map device tree. */
-    printf("\tPrepare devicetree\n");
     assert(prepare_devicetree());
 
     /* Enter ramdisk into /chosen/memory-map and flatten. */
-    printf("\tEnter ramdisk into /chosen/memory-map and flatten.\n");
     assert(prepare_devicetree_stage2());
 
     /* Copy boot-args over to kernel region. */
-    printf("\tCopy boot-args over to kernel region.\n");
     assert((args = prepare_finalized_boot_args()) != NULL);
 
     /* Jump to the kernel. */
