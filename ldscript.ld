@@ -78,6 +78,7 @@ so
   . = _start + 32768;
   __end = . ;
   .mach : { mach.o }
+  .rdsk : { rdsk.o }
   .xmdt : { xmdt.o }
   
 
