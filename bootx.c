@@ -500,12 +500,15 @@ void start_darwin(void)
     /* Map device tree. */
     assert(prepare_devicetree());
 
+    printf("Enter ramdisk into /chosen/memory-map and flatten.\n");
     /* Enter ramdisk into /chosen/memory-map and flatten. */
     assert(prepare_devicetree_stage2());
 
+    printf("Copy boot-args over to kernel region...\n");
     /* Copy boot-args over to kernel region. */
     assert((args = prepare_finalized_boot_args()) != NULL);
 
+    printf("Fire the kernel!\n");
     /* Jump to the kernel. */
     start_routine = (kernel_start *) kernel_entrypoint;
     printf
