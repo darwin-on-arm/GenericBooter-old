@@ -31,19 +31,21 @@
 #include <stdarg.h>
 
 /* Uart stuff */
-#define AMBA_UART_DR(base)      (*(volatile unsigned char *)((base) + 0x00))
-#define AMBA_UART_LCRH(base)    (*(volatile unsigned char *)((base) + 0x2c))
-#define AMBA_UART_CR(base)      (*(volatile unsigned char *)((base) + 0x30))
-#define AMBA_UART_FR(base)      (*(volatile unsigned char *)((base) + 0x18))
-#define REALVIEW_PBA8_SDRAM6_BASE               0x70000000  /* SDRAM bank 6 256MB */
-#define REALVIEW_PBA8_SDRAM7_BASE               0x80000000  /* SDRAM bank 7 256MB */
-#define REALVIEW_PBA8_UART0_BASE                0x10009000  /* UART 0 */
 
-#define UART_FR_TXFE (1 << 7)
-#define UART_FR_TXFF (1 << 5)
+#define	SDRAM_BASE								0x80000000	// spruh73i.pdf, Page:170, EMIF0 SDRAM, up to 1G
 
-#define UART_FR_RXFE (1 << 4)
-#define UART_FR_RXFF (1 << 6)
+#define UART0_BASE								0x44E09000	// spruh73i.pdf, Page:171
+#define UART1_BASE								0x48022000	// spruh73i.pdf, Page:172
+#define UART2_BASE								0x48024000	// spruh73i.pdf, Page:172
+#define UART3_BASE								0x481A6000	// spruh73i.pdf, Page:174
+#define UART4_BASE								0x481A8000	// spruh73i.pdf, Page:174
+#define UART5_BASE								0x481AA000	// spruh73i.pdf, Page:174
+
+#define AMBA_UART_DR(base)			(*(volatile uint16_t *)((base) + 0x00))
+#define AMBA_UART_SSR(base)     	(*(volatile uint16_t *)((base) + 0x44)) // SSR Register, spruh73i.pdf, Page:4074
+
+#define	UART_TX_IS_FULL(base)		(AMBA_UART_SSR(base) & 1)	// SSR Register, spruh73i.pdf, Page:4074
+#define	UART_QUEUE_CHAR(base, c)	(AMBA_UART_DR(base) = c)
 
 #define barrier()               __asm__ __volatile__("": : :"memory");
 
@@ -52,7 +54,7 @@
  *
  * Put a character to the system console.
  */
-uint32_t uart_base = 0x10009000;
+uint32_t uart_base = UART0_BASE;
 static int inited_printf = 1;
 void uart_putchar(int c)
 {
@@ -62,12 +64,12 @@ void uart_putchar(int c)
     if (c == '\n')
         uart_putchar('\r');
 
-    while (AMBA_UART_FR(uart_base) & UART_FR_TXFF) {
+    while (UART_TX_IS_FULL(uart_base)) {
         /* Transmit FIFO full, wait */
         barrier();
     }
 
-    AMBA_UART_DR(uart_base) = c;
+	UART_QUEUE_CHAR(uart_base, c);
 }
 
 /**

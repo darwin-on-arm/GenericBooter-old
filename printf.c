@@ -20,6 +20,10 @@
 
 #include "printf.h"
 
+#ifndef PRINTF_LONG_SUPPORT
+#define PRINTF_LONG_SUPPORT
+#endif
+
 typedef void (*putcf) (void *, char);
 static putcf stdout_putf;
 static void *stdout_putp;
