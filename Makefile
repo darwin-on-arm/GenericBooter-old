@@ -10,7 +10,7 @@ CPPFLAGS	= -Iinclude -D__LITTLE_ENDIAN__ -DTEXT_BASE=$(TEXT_BASE) -DBUILD_STYLE=
 		  -DBUILD_TAG=\"$(BUILD_TAG)\"
 ASFLAGS		= -mcpu=cortex-a8 -DTEXT_BASE=$(TEXT_BASE) -D__ASSEMBLY__
 LDFLAGS		= -nostdlib -Wl,-Tldscript.ld
-TEXT_BASE	= 0x83000000
+TEXT_BASE	= 0x88000000
 CROSS		= arm-none-eabi-
 CC		= $(CROSS)gcc
 AS		= $(CROSS)gcc

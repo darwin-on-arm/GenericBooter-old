@@ -5,7 +5,7 @@ ENTRY(_start)
 SECTIONS
 {
   /* Read-only sections, merged into text segment: */
-  . = 0x83000000;
+  . = 0x88000000;
   .text      :
   {
     *(.text)
@@ -78,8 +78,8 @@ so
   . = _start + 32768;
   __end = . ;
   .mach : { mach.o }
+  .ramdisk : { rdsk.o }
   .xmdt : { xmdt.o }
-  
 
   PROVIDE (__end = .);
 }
