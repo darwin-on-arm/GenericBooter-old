@@ -328,7 +328,7 @@ int CreateDeviceTreeNode(Node * node, char *rangeName, void* datap, int size)
  *
  * Create the memory map node used to enter the kernel ranges into.
  */
-Node *gChosen;
+Node *gChosen, *gOptions;
 
 Node *CreateMemoryMapNode(void)
 {
@@ -339,6 +339,7 @@ Node *CreateMemoryMapNode(void)
     /* /chosen/memory-map */
     chosen = DT__AddChild(root, "chosen");
     memory_map = DT__AddChild(chosen, "memory-map");
+    gOptions = DT__AddChild(root, "options");
 
     gChosen = chosen;
 
@@ -402,19 +403,43 @@ int prepare_devicetree_stage2(void)
 
     /* Insert the cool iBoot-like stuff. */
     uint32_t one = 1;
-    uint64_t ecid = 0xBEEFBEEFBEEFBEEF;
+    uint32_t chip = 0x8900;
+
+    uint64_t ecid = 0xEFBEEFBEEFBEEFBE;
 
     assert(gChosen);
-    CreateDeviceTreeNode(gChosen, "firmware-version", "iBoot-1234.5.6~93", sizeof("iBoot-1234.5.6~93"));
-    CreateDeviceTreeNode(gChosen, "debug-enabled", &one, sizeof(uint32_t));
-    CreateDeviceTreeNode(gChosen, "secure-boot", &one, sizeof(uint32_t));    
+#define CreateNode(node, type, string) \
+    CreateDeviceTreeNode(node, type, string, sizeof(string))
 
+    CreateNode(gChosen, "firmware-version", "iBoot-1234.56.7");
+
+    CreateNode(DT__RootNode(), "platform-name", "Power Macintosh");
+    CreateNode(DT__RootNode(), "mlb-serial-number", "ANTHRSRLNMBR");
+    CreateNode(DT__RootNode(), "secure-root-prefix", "md");
+    CreateNode(DT__RootNode(), "region-info", "JP/A");
+    CreateNode(DT__RootNode(), "model-number", "MB046");
+
+    CreateDeviceTreeNode(gChosen, "debug-enabled", &one, sizeof(uint32_t));
+    CreateDeviceTreeNode(gChosen, "production-cert", &one, sizeof(uint32_t));
+    CreateDeviceTreeNode(gChosen, "system-trusted", &one, sizeof(uint32_t));
+    CreateDeviceTreeNode(gChosen, "secure-boot", &one, sizeof(uint32_t));    
+    CreateDeviceTreeNode(gChosen, "gid-aes-key", &one, sizeof(uint32_t));    
+    CreateDeviceTreeNode(gChosen, "uid-aes-key", &one, sizeof(uint32_t));    
+    CreateDeviceTreeNode(gChosen, "development-cert", &one, sizeof(uint32_t));    
+    CreateDeviceTreeNode(gChosen, "chip-id", &chip, sizeof(uint32_t));    
     CreateDeviceTreeNode(gChosen, "die-id", &ecid, sizeof(uint64_t));    
     CreateDeviceTreeNode(gChosen, "unique-chip-id", &ecid, sizeof(uint64_t));    
 
-    CreateDeviceTreeNode(DT__RootNode(), "serial-number", "SOMESRNLNMBR", sizeof("SOMESRNLNMBR"));
+    CreateDeviceTreeNode(DT__RootNode(), "serial-number", "SOMESRLNMBR", sizeof("SOMESRLNMBR"));
 
     /* Verify we have a ramdisk. */
+    void *ramdiskImage;
+
+    ramdiskImage = get_image3('rdsk');
+    assert(ramdiskImage != NULL);
+    image3_get_tag_data(ramdiskImage, kImage3TagData, (void**)&ramdisk_base,
+                        &ramdisk_size);
+
     if (ramdisk_base) {
         void *reloc_ramdisk_base =
             (void *)memory_region_reserve(&kernel_region, ramdisk_size,
@@ -489,7 +514,7 @@ void start_darwin(void)
 
     /* XXX: Zero out beginning of RAM. */
     printf("preparing system...\n");
-    bzero((void *)gBootArgs.physBase, (32 * 1024 * 1024));
+    bzero((void *)gBootArgs.physBase, (128 * 1024 * 1024));
 
     /* Initialize boot-args. */
     assert(prepare_boot_args());
