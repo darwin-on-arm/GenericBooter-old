@@ -8,3 +8,4 @@ Sample booter for XNU
 - Mach kernel should be in image3 form as 'mach.img3', type is 'krnl', just have DATA and TYPE
   in the Image3 file.
 - This bootloader isn't perfect.
+- Ramdisk should be in 'rdsk.img3' with magic 'rdsk'.
