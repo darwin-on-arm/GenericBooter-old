@@ -1,0 +1,8 @@
+console=ttyO0,115200n8
+
+ipaddr=10.0.76.192
+serverip=10.0.76.20
+ethaddr=de:ad:be:ef:c0:fc
+bootargs=-v -s serial=3 symbolicate-panics=1 rd=md0 silence_kprintf=1
+uenvcmd=tftpboot 0x88000000 /boot.uImage; bootm 0x88000000
+
