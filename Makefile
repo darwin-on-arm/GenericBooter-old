@@ -37,7 +37,7 @@ $(TARGET): $(OBJECTS)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o version.o version.c
 	$(CC) $(LDFLAGS) $(OBJECTS) version.o -o $(TARGET)  -lgcc 
 	$(OBJCOPY) -g -S -O binary $(TARGET) $(TARGET).raw
-	mkimage -A arm -O linux -T kernel -C none -a $(TEXT_BASE) -e $(TEXT_BASE) -n "Linux 2.6" -d $(TARGET).raw $(TARGET).uImage
+	mkimage -x -A arm -O linux -T kernel -C none -a $(TEXT_BASE) -e $(TEXT_BASE) -n "Linux 2.6" -d $(TARGET).raw $(TARGET).uImage
 #	rm -f $(TARGET) $(TARGET).raw
 
 %.o: %.s
