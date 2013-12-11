@@ -10,10 +10,12 @@ CPPFLAGS	= -Iinclude -D__LITTLE_ENDIAN__ -DTEXT_BASE=$(TEXT_BASE) -DBUILD_STYLE=
 		  -DBUILD_TAG=\"$(BUILD_TAG)\"
 ASFLAGS		= -mcpu=cortex-a8 -DTEXT_BASE=$(TEXT_BASE) -D__ASSEMBLY__
 LDFLAGS		= -nostdlib -Wl,-Tldscript.ld
+LOAD_BASE	= 0x88000000
 TEXT_BASE	= 0x88000000
 CROSS		= arm-none-eabi-
-CC		= $(CROSS)gcc
-AS		= $(CROSS)gcc
+CC			= $(CROSS)gcc
+AS			= $(CROSS)gcc
+LD			= $(CROSS)ld
 OBJCOPY		= $(CROSS)objcopy
 TARGET		= SampleBooter.elf
 
@@ -22,22 +24,22 @@ SIZE		= 32768
 all: $(TARGET) $(OBJECTS)
 
 mach.o: mach.img3
-	$(CROSS)ld -r -b binary -o mach.o mach.img3
-	$(CROSS)objcopy --rename-section .data=.kernel mach.o mach.o
+	$(LD) -r -b binary -o mach.o mach.img3
+	$(OBJCOPY) --rename-section .data=.kernel mach.o mach.o
 
 rdsk.o: rdsk.img3
-	$(CROSS)ld -r -b binary -o rdsk.o rdsk.img3
-	$(CROSS)objcopy --rename-section .data=.ramdisk rdsk.o rdsk.o
+	$(LD) -r -b binary -o rdsk.o rdsk.img3
+	$(OBJCOPY) --rename-section .data=.ramdisk rdsk.o rdsk.o
 
 xmdt.o: xmdt.img3
-	$(CROSS)ld -r -b binary -o xmdt.o xmdt.img3
-	$(CROSS)objcopy --rename-section .data=.devicetree xmdt.o xmdt.o
+	$(LD) -r -b binary -o xmdt.o xmdt.img3
+	$(OBJCOPY) --rename-section .data=.devicetree xmdt.o xmdt.o
 
 $(TARGET): $(OBJECTS)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o version.o version.c
 	$(CC) $(LDFLAGS) $(OBJECTS) version.o -o $(TARGET)  -lgcc 
 	$(OBJCOPY) -g -S -O binary $(TARGET) $(TARGET).raw
-	mkimage -x -A arm -O linux -T kernel -C none -a $(TEXT_BASE) -e $(TEXT_BASE) -n "Linux 2.6" -d $(TARGET).raw $(TARGET).uImage
+	mkimage -A arm -O linux -T kernel -C none -a $(LOAD_BASE) -e $(TEXT_BASE) -n "XNU" -d $(TARGET).raw $(TARGET).uImage
 #	rm -f $(TARGET) $(TARGET).raw
 
 %.o: %.s
